@@ -14,11 +14,9 @@ def chat():
     user = data.get("user")
     msg = data.get("message")
 
-    # 🔒 block if not paid
     if user not in paid_users:
         return jsonify({"reply": "Please pay ₹50 to use AI."})
 
-    # ✅ FAKE AI (no API needed)
     reply = "🤖 AI: You said -> " + msg
 
     return jsonify({"reply": reply})
