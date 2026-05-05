@@ -1,9 +1,6 @@
 from flask import Flask, request, jsonify, render_template
-from openai import OpenAI
 
 app = Flask(__name__)
-
-client =None
 
 paid_users = {}
 
@@ -15,24 +12,16 @@ def home():
 def chat():
     data = request.json
     user = data.get("user")
+    msg = data.get("message")
 
     # 🔒 block if not paid
     if user not in paid_users:
         return jsonify({"reply": "Please pay ₹50 to use AI."})
 
-    msg = data.get("message")
+    # ✅ FAKE AI (no API needed)
+    reply = "🤖 AI: You said -> " + msg
 
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": msg}]
-        )
-
-        reply = response.choices[0].message.content
-        return jsonify({"reply": reply})
-
-    except Exception as e:
-        return jsonify({"reply": str(e)})
+    return jsonify({"reply": reply})
 
 @app.route("/payment-success", methods=["POST"])
 def payment_success():
@@ -43,4 +32,4 @@ def payment_success():
     return jsonify({"status": "unlocked"})
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port=10000)
