@@ -2,12 +2,39 @@
 <html>
 <head>
 <title>My AI</title>
+
 <style>
-body { background:#0f172a; color:white; font-family:sans-serif; }
-input, button { padding:10px; margin:5px; }
-#chat { height:300px; overflow:auto; border:1px solid gray; padding:10px; }
-.msg.user { color:lightgreen; }
-.msg.ai { color:lightblue; }
+body {
+    background:#0f172a;
+    color:white;
+    font-family:sans-serif;
+}
+
+input, button {
+    padding:10px;
+    margin:5px;
+}
+
+#chat {
+    height:350px;
+    overflow:auto;
+    border:1px solid gray;
+    padding:10px;
+}
+
+.msg {
+    margin:8px;
+    padding:8px;
+    border-radius:8px;
+}
+
+.user {
+    color:lightgreen;
+}
+
+.ai {
+    color:lightblue;
+}
 </style>
 </head>
 
@@ -37,14 +64,14 @@ function login(){
     user = document.getElementById("username").value;
 
     if(user === ""){
-        alert("Enter username first!");
+        alert("Enter username!");
         return;
     }
 
     alert("Logged in as " + user);
 }
 
-// 💬 SEND MESSAGE
+// 💬 SEND
 async function send(){
  let m = document.getElementById("msg").value;
  let chat = document.getElementById("chat");
@@ -79,7 +106,7 @@ async function send(){
  chat.scrollTop = chat.scrollHeight;
 }
 
-// 💳 FAKE PAYMENT
+// 💳 PAYMENT
 async function pay(){
  if(user === ""){
     alert("Login first!");
@@ -94,7 +121,7 @@ async function pay(){
   body: JSON.stringify({ user: user })
  });
 
- alert("AI unlocked! ✅");
+ alert("AI unlocked ✅");
 }
 </script>
 
