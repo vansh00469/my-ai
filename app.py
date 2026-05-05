@@ -1,36 +1,41 @@
-<!DOCTYPE html>
-<html>
-<body>
+from flask import Flask, request, jsonify, render_template
+from openai import OpenAI
+import os
 
-<h2>My AI</h2>
+app = Flask(__name__)
 
-<input id="msg">
-<button onclick="send()">Send</button>
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-<p id="chat"></p>
+@app.route("/")
+def home():
+    return render_template("index.html")
 
-<!-- ✅ Payment button OUTSIDE script -->
-<button onclick="pay()">Pay ₹50 to Continue</button>
+user_count = {}
 
-<script>
-async function send(){
- let m = document.getElementById("msg").value;
+@app.route("/chat", methods=["POST"])
+def chat():
+    try:
+        user_ip = request.remote_addr
 
- let r = await fetch("/chat", {
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body: JSON.stringify({message:m})
- });
+        if user_ip not in user_count:
+            user_count[user_ip] = 0
 
- let d = await r.json();
- document.getElementById("chat").innerHTML += "<br>You: "+m+"<br>AI: "+d.reply;
-}
+        if user_count[user_ip] >= 5:
+            return jsonify({"reply": "Limit reached. Pay ₹50 to continue."})
 
-function pay() {
-    alert("Payment system coming soon 🚀");
-}
-</script>
+        user_count[user_ip] += 1
 
-</body>
-</html>
+        msg = request.json.get("message")
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": msg}]
+        )
+
+        reply = response.choices[0].message.content
+
+        return jsonify({"reply": reply})
+
+    except Exception as e:
+        return jsonify({"reply": str(e)})
     app.run(host="0.0.0.0", port=10000)
