@@ -1,6 +1,11 @@
 from flask import Flask, request, jsonify, render_template
+from openai import OpenAI
+import os
 
 app = Flask(__name__)
+
+# ✅ USE ENV VARIABLE (VERY IMPORTANT)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 paid_users = {}
 
@@ -12,14 +17,24 @@ def home():
 def chat():
     data = request.json
     user = data.get("user")
-    msg = data.get("message")
 
+    # 🔒 Block if not paid
     if user not in paid_users:
         return jsonify({"reply": "Please pay ₹50 to use AI."})
 
-    reply = "🤖 AI: You said -> " + msg
+    msg = data.get("message")
 
-    return jsonify({"reply": reply})
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": msg}]
+        )
+
+        reply = response.choices[0].message.content
+        return jsonify({"reply": reply})
+
+    except Exception as e:
+        return jsonify({"reply": "Error: " + str(e)})
 
 @app.route("/payment-success", methods=["POST"])
 def payment_success():
@@ -30,4 +45,4 @@ def payment_success():
     return jsonify({"status": "unlocked"})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    app.run()
