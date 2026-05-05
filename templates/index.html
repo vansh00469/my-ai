@@ -1,31 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My AI</title>
+
+<style>
+body {
+    background: #343541;
+    color: white;
+    font-family: Arial;
+}
+
+#chat {
+    height: 60vh;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.msg {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 70%;
+}
+
+.user {
+    background: #444654;
+    margin-left: auto;
+}
+
+.ai {
+    background: #202123;
+}
+</style>
+</head>
+
+<body>
+
+<h2>My AI</h2>
+
+<input id="username" placeholder="Enter username">
+<button onclick="login()">Login</button>
+
+<br><br>
+
+<div id="chat"></div>
+
+<input id="msg" placeholder="Type message">
+<button onclick="send()">Send</button>
+
+<br><br>
+
+<button onclick="pay()">Pay ₹50</button>
+
 <script>
 let user = "";
 
-// 🔐 Login
+// LOGIN
 function login(){
     user = document.getElementById("username").value;
 
     if(user === ""){
-        alert("Enter username first!");
+        alert("Enter username!");
         return;
     }
 
     alert("Logged in as " + user);
 }
 
-// 💬 Send message
+// SEND
 async function send(){
  let m = document.getElementById("msg").value;
  let chat = document.getElementById("chat");
 
  if(user === ""){
-    alert("Please login first!");
+    alert("Login first!");
     return;
  }
 
  chat.innerHTML += `<div class="msg user">You: ${m}</div>`;
 
- // typing animation
  let typing = document.createElement("div");
  typing.className = "msg ai";
  typing.id = "typing";
@@ -45,11 +98,11 @@ async function send(){
 
  document.getElementById("typing").remove();
 
- chat.innerHTML += `<div class="msg ai">AI: ${d.reply}</div>`;
+ chat.innerHTML += `<div class="msg ai">${d.reply}</div>`;
  chat.scrollTop = chat.scrollHeight;
 }
 
-// 💳 Payment (temporary)
+// PAYMENT (fake)
 async function pay(){
  if(user === ""){
     alert("Login first!");
@@ -66,7 +119,10 @@ async function pay(){
   })
  });
 
- alert("AI unlocked! Now you can chat ✅");
+ alert("AI unlocked ✅");
 }
 </script>
+
+</body>
+</html>
 </script>
