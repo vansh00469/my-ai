@@ -1,50 +1,64 @@
 from flask import Flask, request, jsonify, render_template
 import random
+import json
 
 app = Flask(__name__)
 
-paid_users = {}
+# 🔐 Load paid users (persistent)
+try:
+    with open("paid.json", "r") as f:
+        paid_users = json.load(f)
+except:
+    paid_users = {}
+
+def save_users():
+    with open("paid.json", "w") as f:
+        json.dump(paid_users, f)
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
-# 🧠 FAKE AI BRAIN
+# 🧠 SMART FAKE AI
 def fake_ai_reply(msg):
     msg = msg.lower()
 
-    if "hi" in msg or "hello" in msg:
-        return random.choice([
-            "Hey there! 😊",
-            "Hello! How can I help you?",
-            "Hi! What's up?",
-            "Hey! Nice to see you 😄"
-        ])
+    # greetings
+    if any(word in msg for word in ["hi", "hello", "hey"]):
+        return "Hey! Nice to see you 😄"
 
-    elif "name" in msg:
-        return "I'm your personal AI assistant 🤖"
+    # name
+    if "your name" in msg:
+        return "You can call me Nova 🤖"
 
-    elif "how are you" in msg:
-        return random.choice([
-            "I'm doing great! 😄",
-            "All good! What about you?",
-            "Feeling smart today 😎"
-        ])
+    # jokes
+    if "joke" in msg:
+        jokes = [
+            "Why don’t programmers like nature? Too many bugs 🐛😂",
+            "Why did the computer catch a cold? Because it left its Windows open 🤧💻",
+            "I told my AI a joke… it crashed 🤖💀😂"
+        ]
+        return random.choice(jokes)
 
-    elif "bye" in msg:
-        return "Goodbye! Come back soon 👋"
+    # how are you
+    if "how are you" in msg:
+        return "I'm doing great 😄 thanks for asking!"
 
-    elif "what" in msg or "why" in msg or "how" in msg:
-        return "That's an interesting question 🤔 Let me think... I believe it's because things work that way in most cases."
+    # explain
+    if "explain" in msg:
+        return "Sure 😄 tell me what you want me to explain!"
 
-    else:
-        return random.choice([
-            "Hmm... tell me more 🤔",
-            "Interesting... continue 👀",
-            "I understand 🙂",
-            "Can you explain more?",
-            "That sounds cool 😎"
-        ])
+    # question type
+    if any(word in msg for word in ["what", "why", "how"]):
+        return "Hmm 🤔 that's a good question. Let me think..."
+
+    # default replies
+    return random.choice([
+        "Interesting 👀 tell me more",
+        "I understand 🙂",
+        "That sounds cool 😎",
+        "Can you explain more?"
+    ])
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -53,7 +67,7 @@ def chat():
     msg = data.get("message")
 
     # 🔒 lock if not paid
-    if user not in paid_users:
+    if not paid_users.get(user):
         return jsonify({"reply": "Please pay ₹50 to unlock AI 🔒"})
 
     reply = fake_ai_reply(msg)
@@ -65,7 +79,9 @@ def payment_success():
     user = data.get("user")
 
     paid_users[user] = True
+    save_users()
+
     return jsonify({"status": "unlocked"})
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port=10000)
