@@ -2,41 +2,18 @@
 <html>
 <head>
 <title>My AI</title>
-
 <style>
-body {
-    background: #343541;
-    color: white;
-    font-family: Arial;
-}
-
-#chat {
-    height: 60vh;
-    overflow-y: auto;
-    padding: 10px;
-}
-
-.msg {
-    margin: 10px;
-    padding: 10px;
-    border-radius: 10px;
-    max-width: 70%;
-}
-
-.user {
-    background: #444654;
-    margin-left: auto;
-}
-
-.ai {
-    background: #202123;
-}
+body { background:#0f172a; color:white; font-family:sans-serif; }
+input, button { padding:10px; margin:5px; }
+#chat { height:300px; overflow:auto; border:1px solid gray; padding:10px; }
+.msg.user { color:lightgreen; }
+.msg.ai { color:lightblue; }
 </style>
 </head>
 
 <body>
 
-<h2>My AI</h2>
+<h2>My AI 🤖</h2>
 
 <input id="username" placeholder="Enter username">
 <button onclick="login()">Login</button>
@@ -55,19 +32,19 @@ body {
 <script>
 let user = "";
 
-// LOGIN
+// 🔐 LOGIN
 function login(){
     user = document.getElementById("username").value;
 
     if(user === ""){
-        alert("Enter username!");
+        alert("Enter username first!");
         return;
     }
 
     alert("Logged in as " + user);
 }
 
-// SEND
+// 💬 SEND MESSAGE
 async function send(){
  let m = document.getElementById("msg").value;
  let chat = document.getElementById("chat");
@@ -98,11 +75,11 @@ async function send(){
 
  document.getElementById("typing").remove();
 
- chat.innerHTML += `<div class="msg ai">${d.reply}</div>`;
+ chat.innerHTML += `<div class="msg ai">AI: ${d.reply}</div>`;
  chat.scrollTop = chat.scrollHeight;
 }
 
-// PAYMENT (fake)
+// 💳 FAKE PAYMENT
 async function pay(){
  if(user === ""){
     alert("Login first!");
@@ -114,15 +91,12 @@ async function pay(){
  await fetch("/payment-success", {
   method:"POST",
   headers:{"Content-Type":"application/json"},
-  body: JSON.stringify({
-      user: user
-  })
+  body: JSON.stringify({ user: user })
  });
 
- alert("AI unlocked ✅");
+ alert("AI unlocked! ✅");
 }
 </script>
 
 </body>
 </html>
-</script>
