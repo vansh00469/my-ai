@@ -1,97 +1,71 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>My AI</title>
-
-<style>
-body {
-    background: #343541;
-    color: white;
-    font-family: Arial;
-    margin: 0;
-}
-
-#chat {
-    height: 80vh;
-    overflow-y: auto;
-    padding: 20px;
-}
-
-.msg {
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 10px;
-    max-width: 70%;
-}
-
-.user {
-    background: #444654;
-    margin-left: auto;
-}
-
-.ai {
-    background: #202123;
-}
-
-#inputBox {
-    display: flex;
-    padding: 10px;
-    background: #40414f;
-}
-
-input {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    outline: none;
-}
-
-button {
-    padding: 10px;
-    background: #19c37d;
-    border: none;
-    cursor: pointer;
-}
-</style>
-</head>
-
-<body>
-
-<div id="chat"></div>
-
-<div id="inputBox">
-    <input id="msg" placeholder="Type a message...">
-    <button onclick="send()">Send</button>
-</div>
-
-<button onclick="pay()" style="margin:10px;">Pay ₹50</button>
-
 <script>
+let user = "";
+
+// 🔐 Login
+function login(){
+    user = document.getElementById("username").value;
+
+    if(user === ""){
+        alert("Enter username first!");
+        return;
+    }
+
+    alert("Logged in as " + user);
+}
+
+// 💬 Send message
 async function send(){
  let m = document.getElementById("msg").value;
-
  let chat = document.getElementById("chat");
 
+ if(user === ""){
+    alert("Please login first!");
+    return;
+ }
+
  chat.innerHTML += `<div class="msg user">You: ${m}</div>`;
+
+ // typing animation
+ let typing = document.createElement("div");
+ typing.className = "msg ai";
+ typing.id = "typing";
+ typing.innerHTML = "AI is typing...";
+ chat.appendChild(typing);
 
  let r = await fetch("/chat", {
   method:"POST",
   headers:{"Content-Type":"application/json"},
-  body: JSON.stringify({message:m})
+  body: JSON.stringify({
+      message: m,
+      user: user
+  })
  });
 
  let d = await r.json();
 
- chat.innerHTML += `<div class="msg ai">AI: ${d.reply}</div>`;
+ document.getElementById("typing").remove();
 
+ chat.innerHTML += `<div class="msg ai">AI: ${d.reply}</div>`;
  chat.scrollTop = chat.scrollHeight;
 }
 
-function pay(){
- alert("Connect Razorpay here 💰");
-}
-</script>
+// 💳 Payment (temporary)
+async function pay(){
+ if(user === ""){
+    alert("Login first!");
+    return;
+ }
 
-</body>
-</html>
+ alert("Payment successful 💰");
+
+ await fetch("/payment-success", {
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body: JSON.stringify({
+      user: user
+  })
+ });
+
+ alert("AI unlocked! Now you can chat ✅");
+}
 </script>
