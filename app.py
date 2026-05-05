@@ -3,7 +3,7 @@ from openai import OpenAI
 
 app = Flask(__name__)
 
-client = OpenAI(api_key="YOUR_API_KEY_HERE")
+client =None
 
 paid_users = {}
 
